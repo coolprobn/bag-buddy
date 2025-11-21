@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product: one
+  customer: one
+  selling_price: 9.99
+  quantity: 1
+  delivery_partner: one
+  delivery_cost: 9.99
+  profit: 9.99
+  notes: MyText
+  payment_method: cash
+
+two:
+  product: two
+  customer: two
+  selling_price: 9.99
+  quantity: 1
+  delivery_partner: two
+  delivery_cost: 9.99
+  profit: 9.99
+  notes: MyText
+  payment_method: online

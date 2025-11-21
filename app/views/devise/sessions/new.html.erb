@@ -1,0 +1,42 @@
+<div class="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center py-12">
+  <div class="max-w-md w-full">
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-primary-900 mb-2">Welcome Back</h1>
+        <p class="text-primary-600">Log in to your Bag Buddy account</p>
+      </div>
+
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-6" }) do |f| %>
+        <div>
+          <%= f.label :email, class: "block text-sm font-medium text-primary-700 mb-2" %>
+          <%= f.email_field :email, 
+                autofocus: true, 
+                autocomplete: "email",
+                class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors",
+                placeholder: "you@example.com" %>
+        </div>
+
+        <div>
+          <%= f.label :password, class: "block text-sm font-medium text-primary-700 mb-2" %>
+          <%= f.password_field :password, 
+                autocomplete: "current-password",
+                class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors",
+                placeholder: "••••••••" %>
+        </div>
+
+        <% if devise_mapping.rememberable? %>
+          <div class="flex items-center">
+            <%= f.check_box :remember_me, class: "h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300 rounded" %>
+            <%= f.label :remember_me, class: "ml-2 block text-sm text-primary-700" %>
+          </div>
+        <% end %>
+
+        <div>
+          <%= f.submit "Log in", class: "w-full bg-primary-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors cursor-pointer" %>
+        </div>
+      <% end %>
+
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</div>
