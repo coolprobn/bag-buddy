@@ -6,7 +6,7 @@ class DashboardTest < ApplicationSystemTestCase
   end
 
   test "dashboard page loads" do
-    sign_in @user
+    login_as @user
     visit dashboard_path
     assert_selector "h1", text: "Dashboard"
   end

@@ -9,6 +9,7 @@ one:
   delivery_cost: 9.99
   profit: 9.99
   notes: MyText
+  payment_method: cash
 
 two:
   product: two
@@ -19,3 +20,4 @@ two:
   delivery_cost: 9.99
   profit: 9.99
   notes: MyText
+  payment_method: online

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_22_174043) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_22_174044) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -117,7 +117,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_22_174043) do
     t.datetime "created_at", null: false
     t.string "hashtags", default: [], array: true
     t.jsonb "metadata", default: {}
-    t.integer "platforms_posted", default: [], array: true
+    t.string "platforms_posted", default: [], array: true
     t.jsonb "post_url_per_platform", default: {}
     t.string "title", null: false
     t.datetime "updated_at", null: false

@@ -2,10 +2,10 @@
 
 one:
   title: MyString
-  platforms_posted: 1
-  post_url_per_platform: 
+  platforms_posted: [instagram, tiktok, facebook]
+  post_url_per_platform: {}
 
 two:
   title: MyString
-  platforms_posted: 1
-  post_url_per_platform: 
+  platforms_posted: [instagram]
+  post_url_per_platform: {} 

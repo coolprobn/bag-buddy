@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  key: MyString
+  key: low_stock_threshold
   value: MyText
-  value_type: MyString
+  field_type: number_field
   description: MyText
 
 two:
-  key: MyString
+  key: default_markup_percentage
   value: MyText
-  value_type: MyString
+  field_type: boolean_field
   description: MyText

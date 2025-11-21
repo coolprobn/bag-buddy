@@ -3,11 +3,11 @@
 one:
   name: MyString
   default_cost: 9.99
-  contact: MyString
+  contact_number: MyString
   notes: MyText
 
 two:
   name: MyString
   default_cost: 9.99
-  contact: MyString
+  contact_number: MyString
   notes: MyText
