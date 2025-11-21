@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  original_sale: one
+  replacement_product: one
+  price_difference: 9.99
+  notes: MyText
+
+two:
+  original_sale: two
+  replacement_product: two
+  price_difference: 9.99
+  notes: MyText

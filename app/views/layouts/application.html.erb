@@ -23,7 +23,36 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body>
+  <body class="bg-secondary-50 p-4">
+    <% if user_signed_in? %>
+      <nav class="bg-primary-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <%= link_to "Bag Buddy", dashboard_path, class: "text-xl font-bold" %>
+            </div>
+            <div class="flex items-center space-x-4">
+              <span class="text-sm"><%= current_user.full_name %></span>
+              <%= button_to "Logout", destroy_user_session_path, method: :delete, 
+                  class: "bg-primary-700 hover:bg-primary-800 px-4 py-2 rounded-lg text-sm font-semibold transition-colors" %>
+            </div>
+          </div>
+        </div>
+      </nav>
+    <% end %>
+
+    <% if notice %>
+      <div class="bg-primary-100 border-l-4 border-primary-500 text-primary-800 p-4 mt-4 rounded">
+        <p class="font-semibold"><%= notice %></p>
+      </div>
+    <% end %>
+
+    <% if alert %>
+      <div class="bg-accent-100 border-l-4 border-accent-500 text-accent-800 p-4 mt-4 rounded">
+        <p class="font-semibold"><%= alert %></p>
+      </div>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>

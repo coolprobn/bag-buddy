@@ -1,0 +1,50 @@
+<div class="min-h-screen bg-secondary-50">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-primary-900 mb-2">Dashboard</h1>
+      <p class="text-secondary-600">Welcome back, <%= current_user.full_name %>!</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-secondary-600 mb-2">Total Products</h3>
+        <p class="text-3xl font-bold text-primary-600"><%= Product.count %></p>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-secondary-600 mb-2">Total Sales</h3>
+        <p class="text-3xl font-bold text-primary-600"><%= Sale.count %></p>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-secondary-600 mb-2">Total Customers</h3>
+        <p class="text-3xl font-bold text-primary-600"><%= Customer.count %></p>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-secondary-600 mb-2">Total Vendors</h3>
+        <p class="text-3xl font-bold text-primary-600"><%= Vendor.count %></p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold text-primary-900 mb-4">Quick Actions</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button class="bg-primary-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-lg">
+          ➕ Add Product
+        </button>
+        <button class="bg-primary-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-lg">
+          💰 Add Sale
+        </button>
+        <button class="bg-primary-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-lg">
+          👤 Add Customer
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold text-primary-900 mb-4">Recent Activity</h2>
+      <p class="text-secondary-600">Activity feed will be displayed here.</p>
+    </div>
+  </div>
+</div>
