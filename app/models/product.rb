@@ -25,4 +25,25 @@ class Product < ApplicationRecord
               greater_than: 0
             },
             allow_nil: true
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[
+      auto_suggested_selling_price
+      category
+      color_family
+      created_at
+      current_cost_price
+      current_vendor_id
+      description
+      id
+      name
+      status
+      stock_quantity
+      updated_at
+    ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[current_vendor vendor_price_histories sales exchanges]
+  end
 end

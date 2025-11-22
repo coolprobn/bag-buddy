@@ -1,0 +1,101 @@
+<%= form_with model: vendor, local: true, class: "space-y-6" do |f| %>
+  <%= render "shared/error_messages", resource: vendor %>
+
+  <div>
+    <%= render Forms::LabelComponent.new(form: f, field: :name) %>
+    <%= render Forms::InputFieldComponent.new(
+          form: f,
+          field: :name,
+          type: :text,
+          placeholder: "Vendor name",
+          autofocus: true
+        ) %>
+  </div>
+
+  <div>
+    <%= render Forms::LabelComponent.new(form: f, field: :phone) %>
+    <%= render Forms::PhoneFieldComponent.new(
+          form: f,
+          field: :phone,
+          placeholder: "+977 98XXXXXXXX"
+        ) %>
+  </div>
+
+  <div>
+    <%= render Forms::LabelComponent.new(form: f, field: :address) %>
+    <%= render Forms::TextAreaFieldComponent.new(
+          form: f,
+          field: :address,
+          rows: 3,
+          placeholder: "Vendor address"
+        ) %>
+  </div>
+
+  <div class="md:col-span-2">
+    <h3 class="text-lg font-semibold text-primary-900 mb-4">Social Media Profiles</h3>
+    <p class="text-sm text-secondary-600 mb-4">Enter usernames only (e.g., "coolprobn" not full URLs)</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :instagram_profile_url, text: "Instagram Username") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :instagram_profile_url,
+            type: :text,
+            placeholder: "coolprobn"
+          ) %>
+    </div>
+
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :tiktok_profile_url, text: "TikTok Username") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :tiktok_profile_url,
+            type: :text,
+            placeholder: "coolprobn"
+          ) %>
+    </div>
+
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :facebook_url, text: "Facebook Username") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :facebook_url,
+            type: :text,
+            placeholder: "coolprobn"
+          ) %>
+    </div>
+
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :whatsapp_number, text: "WhatsApp Number") %>
+      <%= render Forms::PhoneFieldComponent.new(
+            form: f,
+            field: :whatsapp_number,
+            placeholder: "+977 98XXXXXXXX"
+          ) %>
+    </div>
+  </div>
+
+  <div>
+    <%= render Forms::LabelComponent.new(form: f, field: :notes) %>
+    <%= render Forms::TextAreaFieldComponent.new(
+          form: f,
+          field: :notes,
+          rows: 4,
+          placeholder: "Additional notes about this vendor"
+        ) %>
+  </div>
+
+  <div class="flex gap-4 pt-4">
+    <%= render Forms::SaveButtonComponent.new(
+          form: f,
+          label: vendor.persisted? ? "Update Vendor" : "Create Vendor",
+          class: "flex-1"
+        ) %>
+    <%= render Buttons::SecondaryComponent.new(href: vendors_path, class: "flex-1") do %>
+      Cancel
+    <% end %>
+  </div>
+<% end %>
+

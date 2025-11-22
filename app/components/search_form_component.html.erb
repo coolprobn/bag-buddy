@@ -1,0 +1,24 @@
+<div class="bg-white rounded-lg shadow p-4 mb-6">
+  <%= helpers.search_form_for q, url: search_url, method: :get, html: { class: form_class } do |f| %>
+    <% if fields.any? %>
+      <% fields.each do |field| %>
+        <div class="<%= field[:class] || 'flex-1' %>">
+          <%= f.search_field field[:name], 
+                placeholder: field[:placeholder] || "Search...",
+                class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" %>
+        </div>
+      <% end %>
+    <% end %>
+    
+    <% if block %>
+      <%= view_context.capture(f, &block) %>
+    <% end %>
+    
+    <div class="mt-4 flex gap-2">
+      <%= f.submit "Search", class: helpers.primary_button_classes %>
+      <%= render Buttons::SecondaryComponent.new(href: search_url) do %>
+        Clear
+      <% end %>
+    </div>
+  <% end %>
+</div>

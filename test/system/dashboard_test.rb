@@ -2,7 +2,7 @@ require "test_helper"
 
 class DashboardTest < ApplicationSystemTestCase
   setup do
-    @user = users(:admin)
+    @user = users(:one)
   end
 
   test "dashboard page loads" do

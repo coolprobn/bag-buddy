@@ -1,0 +1,14 @@
+<div class="min-h-screen bg-secondary-50">
+  <div class="max-w-2xl mx-auto">
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-primary-900 mb-2">Edit Vendor</h1>
+      <%= link_to "← Back to Vendors", vendors_path, 
+          class: "text-primary-600 hover:text-primary-700 font-medium" %>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <%= render "form", vendor: @vendor %>
+    </div>
+  </div>
+</div>
+
