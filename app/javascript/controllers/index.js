@@ -18,3 +18,6 @@ application.register("dropdown", DropdownController)
 
 import SettingFormController from "./setting_form_controller"
 application.register("setting-form", SettingFormController)
+
+import MobileMenuController from "./mobile_menu_controller"
+application.register("mobile-menu", MobileMenuController)

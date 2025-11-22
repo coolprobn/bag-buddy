@@ -1,0 +1,19 @@
+<div class="min-h-screen bg-secondary-50">
+  <div class="max-w-3xl mx-auto">
+    <div class="mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        <div>
+          <h1 class="text-3xl font-bold text-primary-900 mb-2">Edit Profile</h1>
+          <p class="text-secondary-600">Update your account information</p>
+        </div>
+        <%= link_to "← Back to Profile", profile_path, 
+            class: "text-primary-600 hover:text-primary-700 font-medium" %>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <%= render "form", user: @user %>
+    </div>
+  </div>
+</div>
+

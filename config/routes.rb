@@ -17,7 +17,13 @@ Rails.application.routes.draw do
   get "dashboard", to: "dashboard#index", as: :dashboard
   get "reports", to: "reports#index", as: :reports
   get "reports/export", to: "reports#export", as: :export_reports
-  resources :application_settings, path: "settings"
+  get "reports/bulk_export", to: "reports#bulk_export", as: :bulk_export_reports
+
+  # User profile
+  get "profile", to: "users#show", as: :profile
+  get "profile/edit", to: "users#edit", as: :edit_profile
+  patch "profile", to: "users#update"
+  put "profile", to: "users#update"
 
   # Resources
   resources :vendors
@@ -37,12 +43,13 @@ Rails.application.routes.draw do
   resources :exchanges
   resources :expenses
   resources :delivery_partners
+  resources :application_settings, path: "settings"
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", :as => :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  get "manifest" => "rails/pwa#manifest", :as => :pwa_manifest
+  get "service-worker" => "rails/pwa#service_worker", :as => :pwa_service_worker
 end
