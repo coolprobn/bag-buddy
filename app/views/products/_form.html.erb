@@ -1,0 +1,143 @@
+<!-- Existing Images (only for edit) -->
+<% if product.persisted? && product.images.attached? %>
+  <div class="mb-6">
+    <label class="block text-sm font-medium text-primary-700 mb-2">Current Images</label>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <% product.images.each_with_index do |image, index| %>
+        <div class="relative">
+          <%= image_tag image, class: "w-full h-32 object-cover rounded-lg" %>
+          <%= button_to "Remove", 
+                purge_attachment_product_path(product, attachment_id: image.id),
+                method: :delete,
+                data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" },
+                class: "absolute top-2 right-2 bg-accent-600 text-white px-2 py-1 rounded text-xs hover:bg-accent-700" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<%= form_with model: product, local: true, multipart: true, class: "space-y-6", data: { controller: "price-calculator", price_calculator_markup_percentage_value: ApplicationSetting.get("default_markup_percentage") || 50 } do |f| %>
+  <%= render "shared/error_messages", resource: product %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :name) %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :name,
+            type: :text,
+            placeholder: "Product name",
+            autofocus: true
+          ) %>
+    </div>
+
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :category) %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :category,
+            type: :text,
+            placeholder: "Category"
+          ) %>
+    </div>
+
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :color_family, text: "Color Family") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :color_family,
+            type: :text,
+            placeholder: "e.g., Black, Brown, Tan"
+          ) %>
+    </div>
+
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :status) %>
+      <%= f.select :status,
+            options_for_select([["Active", "active"], ["Draft", "draft"], ["Archived", "archived"]], product.status),
+            {},
+            class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors" %>
+    </div>
+
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :current_vendor_id, text: "Vendor") %>
+      <%= f.select :current_vendor_id,
+            options_from_collection_for_select(vendors, :id, :name, product.current_vendor_id),
+            { include_blank: "Select a vendor" },
+            class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors" %>
+    </div>
+
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :stock_quantity) %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :stock_quantity,
+            type: :number,
+            placeholder: "0",
+            min: 0,
+            step: 1
+          ) %>
+    </div>
+
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :current_cost_price, text: "Cost Price (Rs.)") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :current_cost_price,
+            type: :number,
+            placeholder: "0.00",
+            min: 0,
+            step: 0.01,
+            data: { price_calculator_target: "costPrice", action: "input->price-calculator#calculate" }
+          ) %>
+      <p class="text-xs text-secondary-600 mt-1">Enter the cost price from vendor</p>
+    </div>
+
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :auto_suggested_selling_price, text: "Suggested Selling Price (Rs.)") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :auto_suggested_selling_price,
+            type: :number,
+            placeholder: "Auto-calculated",
+            min: 0,
+            step: 0.01,
+            class: product.persisted? ? "" : "bg-secondary-50",
+            readonly: !product.persisted?,
+            data: { price_calculator_target: "suggestedPrice" }
+          ) %>
+      <p class="text-xs text-secondary-600 mt-1">Auto-calculated based on markup percentage</p>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :description) %>
+      <%= render Forms::TextAreaFieldComponent.new(
+            form: f,
+            field: :description,
+            rows: 4,
+            placeholder: "Product description"
+          ) %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :images, product.persisted? ? "Add More Images" : "Product Images", class: "block text-sm font-medium text-primary-700 mb-2" %>
+      <%= f.file_field :images,
+            multiple: true,
+            accept: "image/*",
+            class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors" %>
+      <p class="text-xs text-secondary-600 mt-1"><%= product.persisted? ? "You can select multiple images to add" : "You can select multiple images" %></p>
+    </div>
+  </div>
+
+  <div class="flex gap-4 pt-4">
+    <%= render Forms::SaveButtonComponent.new(
+          form: f,
+          label: product.persisted? ? "Update Product" : "Create Product",
+          class: "flex-1"
+        ) %>
+    <%= render Buttons::SecondaryComponent.new(href: products_path, class: "flex-1") do %>
+      Cancel
+    <% end %>
+  </div>
+<% end %>

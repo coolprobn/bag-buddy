@@ -1,0 +1,14 @@
+<% if link_tag? %>
+  <% if method.present? %>
+    <%= button_to href, method: method, data: data, class: base_classes, **html_options do %>
+      <%= content %>
+    <% end %>
+  <% else %>
+    <%= link_to content, href, data: data, class: base_classes, **html_options %>
+  <% end %>
+<% else %>
+  <%= button_tag type: :button, data: data, class: base_classes, **html_options do %>
+    <%= content %>
+  <% end %>
+<% end %>
+

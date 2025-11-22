@@ -22,6 +22,10 @@ class ApplicationSetting < ApplicationRecord
     end
   end
 
+  def self.get(key)
+    find_by(key: key)&.parsed_value
+  end
+
   private
 
   def validate_value_by_field_type

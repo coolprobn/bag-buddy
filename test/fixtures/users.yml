@@ -4,9 +4,11 @@
 # model remove the "{}" from the fixture names and add the columns immediately
 # below each fixture, per the syntax in the comments below
 #
-admin:
+one:
   email: admin@bagbuddy.com.np
   first_name: Admin
+  last_name: User
   phone: 9800000000
   address: Kathmandu, Nepal
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
   confirmed_at: <%= Time.current %>

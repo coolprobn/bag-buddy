@@ -19,26 +19,13 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="bg-secondary-50 p-4">
+  <body class="bg-secondary-50">
     <% if user_signed_in? %>
-      <nav class="bg-primary-600 text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-              <%= link_to "Bag Buddy", dashboard_path, class: "text-xl font-bold" %>
-            </div>
-            <div class="flex items-center space-x-4">
-              <span class="text-sm"><%= current_user.full_name %></span>
-              <%= button_to "Logout", destroy_user_session_path, method: :delete, 
-                  class: "bg-primary-700 hover:bg-primary-800 px-4 py-2 rounded-lg text-sm font-semibold transition-colors" %>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <%= render NavigationComponent.new(current_user: current_user, current_path: request.path) %>
     <% end %>
 
     <% if notice %>
@@ -53,6 +40,8 @@
       </div>
     <% end %>
 
-    <%= yield %>
+    <div class="m-4">
+      <%= yield %>
+    </div>
   </body>
 </html>

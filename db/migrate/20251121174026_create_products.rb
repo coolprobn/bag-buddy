@@ -4,6 +4,7 @@ class CreateProducts < ActiveRecord::Migration[8.1]
       t.string :name, null: false
       t.text :description
       t.string :category
+      t.string :color_family
       t.integer :stock_quantity, null: false, default: 0
       t.decimal :current_cost_price, precision: 10, scale: 2, null: false
       t.references :current_vendor,
