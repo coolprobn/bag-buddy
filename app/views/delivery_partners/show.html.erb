@@ -1,0 +1,94 @@
+<div class="min-h-screen bg-secondary-50">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-primary-900 mb-2"><%= @delivery_partner.name %></h1>
+        <p class="text-secondary-600">Delivery Partner Details</p>
+      </div>
+      <%= render Buttons::PrimaryComponent.new(href: edit_delivery_partner_path(@delivery_partner)) do %>
+        Edit Delivery Partner
+      <% end %>
+    </div>
+
+    <%= link_to "← Back to Delivery Partners", delivery_partners_path, 
+        class: "text-primary-600 hover:text-primary-700 font-medium mb-6 inline-block" %>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Partner Information -->
+      <%= render CardComponent.new(title: "Partner Information") do %>
+        <dl class="space-y-4">
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Name</dt>
+            <dd class="mt-1 text-lg text-primary-900"><%= @delivery_partner.name %></dd>
+          </div>
+
+          <% if @delivery_partner.contact_number.present? %>
+            <div>
+              <dt class="text-sm font-medium text-secondary-600">Contact Number</dt>
+              <dd class="mt-1 text-primary-900">
+                <a href="tel:<%= @delivery_partner.contact_number %>" class="text-primary-600 hover:text-primary-700 underline">
+                  📞 <%= @delivery_partner.contact_number %>
+                </a>
+              </dd>
+            </div>
+          <% end %>
+
+          <% if @delivery_partner.default_cost.present? %>
+            <div>
+              <dt class="text-sm font-medium text-secondary-600">Default Cost</dt>
+              <dd class="mt-1 text-2xl font-bold text-primary-900">
+                Rs. <%= number_with_delimiter(@delivery_partner.default_cost) %>
+              </dd>
+            </div>
+          <% end %>
+
+          <% if @delivery_partner.notes.present? %>
+            <div>
+              <dt class="text-sm font-medium text-secondary-600">Notes</dt>
+              <dd class="mt-1 text-primary-900 whitespace-pre-wrap"><%= @delivery_partner.notes %></dd>
+            </div>
+          <% end %>
+        </dl>
+      <% end %>
+
+      <!-- Sales Statistics -->
+      <%= render CardComponent.new(title: "Usage Statistics") do %>
+        <dl class="space-y-4">
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Total Sales</dt>
+            <dd class="mt-1 text-2xl font-bold text-primary-900"><%= @delivery_partner.sales.count %></dd>
+          </div>
+
+          <% if @delivery_partner.sales.any? %>
+            <div>
+              <dt class="text-sm font-medium text-secondary-600">Total Delivery Revenue</dt>
+              <dd class="mt-1 text-xl font-semibold text-primary-900">
+                Rs. <%= number_with_delimiter(@delivery_partner.sales.sum(:delivery_cost)) %>
+              </dd>
+            </div>
+
+            <div class="pt-4 border-t border-secondary-200">
+              <dt class="text-sm font-medium text-secondary-600 mb-2">Recent Sales</dt>
+              <div class="space-y-2">
+                <% @delivery_partner.sales.order(created_at: :desc).limit(5).each do |sale| %>
+                  <div class="flex items-center justify-between p-2 bg-secondary-50 rounded">
+                    <div>
+                      <p class="text-sm font-medium text-primary-900"><%= sale.product.name %></p>
+                      <p class="text-xs text-secondary-600"><%= l(sale.created_at.to_date, format: :short) %></p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-sm font-semibold text-primary-900">Rs. <%= number_with_delimiter(sale.delivery_cost) %></p>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% else %>
+            <p class="text-secondary-600">No sales recorded yet for this delivery partner.</p>
+          <% end %>
+        </dl>
+      <% end %>
+    </div>
+  </div>
+</div>
+

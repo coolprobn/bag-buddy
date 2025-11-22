@@ -11,6 +11,8 @@ class Forms::InputFieldComponent < ViewComponent::Base
     type: :text,
     placeholder: nil,
     autofocus: false,
+    readonly: false,
+    value: nil,
     class: "",
     **html_options
   )
@@ -19,6 +21,8 @@ class Forms::InputFieldComponent < ViewComponent::Base
     @type = type
     @placeholder = placeholder
     @autofocus = autofocus
+    @readonly = readonly
+    @value = value
     @additional_classes = binding.local_variable_get(:class)
     @html_options = html_options
   end
@@ -30,6 +34,8 @@ class Forms::InputFieldComponent < ViewComponent::Base
               :type,
               :placeholder,
               :autofocus,
+              :readonly,
+              :value,
               :additional_classes,
               :html_options
 
@@ -37,6 +43,7 @@ class Forms::InputFieldComponent < ViewComponent::Base
     classes = [
       "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
     ]
+    classes << "bg-secondary-50" if readonly
     classes << additional_classes if additional_classes.present?
     classes.compact.join(" ")
   end
@@ -49,6 +56,8 @@ class Forms::InputFieldComponent < ViewComponent::Base
     options = { class: input_classes, **html_options }
     options[:placeholder] = placeholder if placeholder.present?
     options[:autofocus] = true if autofocus
+    options[:readonly] = true if readonly
+    options[:value] = value if value.present?
     options
   end
 end

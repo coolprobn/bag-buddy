@@ -30,13 +30,20 @@ class NavigationComponent < ViewComponent::Base
         group: "Management",
         items: [
           { name: "Vendors", path: vendors_path, icon: "🏪" },
-          { name: "Expenses", path: expenses_path, icon: "💸" }
+          { name: "Expenses", path: expenses_path, icon: "💸" },
+          { name: "Delivery Partners", path: delivery_partners_path, icon: "🚚" }
         ]
       },
       {
         group: "Analytics",
         items: [
           { name: "Reports", path: reports_path, icon: "📊" }
+        ]
+      },
+      {
+        group: "System",
+        items: [
+          { name: "Settings", path: application_settings_path, icon: "⚙️" }
         ]
       }
     ]

@@ -1,0 +1,103 @@
+<%= form_with model: application_setting, local: true, class: "space-y-6", data: { controller: "setting-form" } do |f| %>
+  <%= render "shared/error_messages", resource: application_setting %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Key -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :key) %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :key,
+            type: :text,
+            placeholder: "e.g., low_stock_threshold",
+            autofocus: true,
+            readonly: application_setting.persisted?
+          ) %>
+      <p class="text-xs text-secondary-600 mt-1">Unique identifier for this setting (cannot be changed after creation)</p>
+    </div>
+
+    <!-- Field Type -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :field_type, text: "Field Type") %>
+      <%= f.select :field_type,
+            options_for_select([
+              ["Number Field", "number_field"],
+              ["Text Field", "text_field"],
+              ["Boolean Field", "boolean_field"]
+            ], application_setting.field_type),
+            { include_blank: "Select field type" },
+            {
+              class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors",
+              data: {
+                setting_form_target: "fieldType",
+                action: "change->setting-form#updateFieldType"
+              }
+            } %>
+    </div>
+
+    <!-- Value (dynamic based on field type) -->
+    <div class="md:col-span-2" data-setting-form-target="valueField">
+      <%= render Forms::LabelComponent.new(form: f, field: :value) %>
+      
+      <% if application_setting.field_type == "boolean_field" %>
+        <div class="flex items-center gap-4">
+          <%= f.radio_button :value, "true", 
+                checked: application_setting.value == "true" || application_setting.value == "1",
+                class: "w-4 h-4 text-primary-600 focus:ring-primary-500 border-secondary-300" %>
+          <%= f.label :value_true, "True", class: "text-sm font-medium text-primary-900" %>
+          <%= f.radio_button :value, "false", 
+                checked: application_setting.value == "false" || application_setting.value == "0" || application_setting.value.blank?,
+                class: "w-4 h-4 text-primary-600 focus:ring-primary-500 border-secondary-300" %>
+          <%= f.label :value_false, "False", class: "text-sm font-medium text-primary-900" %>
+        </div>
+      <% elsif application_setting.field_type == "number_field" %>
+        <%= render Forms::InputFieldComponent.new(
+              form: f,
+              field: :value,
+              type: :number,
+              placeholder: "0.00",
+              step: 0.01,
+              value: application_setting.value
+            ) %>
+      <% elsif application_setting.field_type == "text_field" %>
+        <%= render Forms::TextAreaFieldComponent.new(
+              form: f,
+              field: :value,
+              rows: 4,
+              placeholder: "Enter text value..."
+            ) %>
+      <% else %>
+        <%= render Forms::InputFieldComponent.new(
+              form: f,
+              field: :value,
+              type: :text,
+              placeholder: "Select field type first..."
+            ) %>
+        <p class="text-xs text-secondary-600 mt-1">Please select a field type to see the appropriate input</p>
+      <% end %>
+    </div>
+
+    <!-- Description -->
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :description) %>
+      <%= render Forms::TextAreaFieldComponent.new(
+            form: f,
+            field: :description,
+            rows: 3,
+            placeholder: "Describe what this setting does..."
+          ) %>
+    </div>
+  </div>
+
+  <div class="flex gap-4 pt-4">
+    <%= render Forms::SaveButtonComponent.new(
+          form: f,
+          label: application_setting.persisted? ? "Update Setting" : "Create Setting",
+          class: "flex-1"
+        ) %>
+    <%= render Buttons::SecondaryComponent.new(href: application_settings_path, class: "flex-1") do %>
+      Cancel
+    <% end %>
+  </div>
+<% end %>
+
