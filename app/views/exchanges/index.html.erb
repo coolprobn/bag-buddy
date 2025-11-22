@@ -1,0 +1,122 @@
+<div class="min-h-screen bg-secondary-50">
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-primary-900 mb-2">Exchanges</h1>
+        <p class="text-secondary-600">Manage product exchanges</p>
+      </div>
+      <%= render Buttons::PrimaryComponent.new(href: new_exchange_path) do %>
+        ➕ New Exchange
+      <% end %>
+    </div>
+
+    <!-- Search Form -->
+    <%= render SearchFormComponent.new(
+          q: @q,
+          url: exchanges_path,
+          form_class: "space-y-4"
+        ) do |f| %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <%= f.search_field :original_sale_product_name_cont, 
+                placeholder: "Search by original product...",
+                class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" %>
+        </div>
+        <div>
+          <%= f.search_field :replacement_product_name_cont, 
+                placeholder: "Search by replacement product...",
+                class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Exchanges List -->
+    <% if @exchanges.any? %>
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-secondary-200">
+            <thead class="bg-secondary-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                  Original Product
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                  Replacement Product
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                  Price Difference
+                </th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-secondary-200">
+              <% @exchanges.each do |exchange| %>
+                <tr class="hover:bg-secondary-50">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700">
+                    <%= l(exchange.created_at.to_date, format: :long) %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-primary-900">
+                      <%= link_to exchange.original_sale.product.name, product_path(exchange.original_sale.product), 
+                          class: "text-primary-600 hover:text-primary-700 underline" %>
+                    </div>
+                    <div class="text-sm text-secondary-500">
+                      Sale: <%= link_to "##{exchange.original_sale.obfuscated_id}", sale_path(exchange.original_sale), 
+                          class: "text-primary-600 hover:text-primary-700" %>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-primary-900">
+                      <%= link_to exchange.replacement_product.name, product_path(exchange.replacement_product), 
+                          class: "text-primary-600 hover:text-primary-700 underline" %>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-semibold <%= exchange.price_difference >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                      <% if exchange.price_difference.present? %>
+                        <%= exchange.price_difference >= 0 ? '+' : '' %>Rs. <%= number_with_delimiter(exchange.price_difference) %>
+                      <% else %>
+                        —
+                      <% end %>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex justify-end gap-2">
+                      <%= render Buttons::OutlineComponent.new(size: :sm, href: exchange_path(exchange)) do %>
+                        View
+                      <% end %>
+                      <%= render Buttons::OutlineComponent.new(size: :sm, href: edit_exchange_path(exchange)) do %>
+                        Edit
+                      <% end %>
+                      <%= render Buttons::DangerComponent.new(size: :sm, href: exchange_path(exchange), method: :delete, data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }) do %>
+                        Delete
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex justify-center mt-6">
+        <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+      </div>
+    <% else %>
+      <div class="bg-white rounded-lg shadow p-12 text-center">
+        <p class="text-secondary-600 text-lg mb-4">No exchanges found.</p>
+        <%= render Buttons::PrimaryComponent.new(href: new_exchange_path) do %>
+          Process your first exchange
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+

@@ -14,6 +14,7 @@ class Sale < ApplicationRecord
 
   validates :selling_price, presence: true, numericality: { greater_than: 0 }
   validates :quantity, presence: true, numericality: { greater_than: 0 }
+  validate :quantity_not_exceeding_stock
   validates :subtotal,
             numericality: {
               greater_than_or_equal_to: 0
@@ -49,7 +50,41 @@ class Sale < ApplicationRecord
     ((discount_amount / subtotal) * 100).round(2)
   end
 
+  def sale_display
+    "#{product.name} - #{customer.full_name} (#{created_at.strftime('%b %d, %Y')})"
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[
+      created_at
+      delivery_cost
+      discount_amount
+      id
+      notes
+      payment_method
+      profit
+      quantity
+      selling_price
+      subtotal
+      tax_amount
+      total
+      updated_at
+    ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[product customer delivery_partner sales_returns exchanges]
+  end
+
   private
+
+  def quantity_not_exceeding_stock
+    return unless product.present? && quantity.present?
+
+    if quantity > product.stock_quantity
+      errors.add(:quantity, "cannot exceed available stock (#{product.stock_quantity} available)")
+    end
+  end
 
   def calculate_amounts
     # Calculate subtotal (price * quantity before discount)

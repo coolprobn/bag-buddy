@@ -9,3 +9,6 @@ application.register("hello", HelloController)
 
 import PriceCalculatorController from "./price_calculator_controller"
 application.register("price-calculator", PriceCalculatorController)
+
+import SaleCalculatorController from "./sale_calculator_controller"
+application.register("sale-calculator", SaleCalculatorController)

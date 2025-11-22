@@ -1,0 +1,76 @@
+<div class="min-h-screen bg-secondary-50">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-primary-900 mb-2">Expense Details</h1>
+        <p class="text-secondary-600">Expense #<%= @expense.obfuscated_id %></p>
+      </div>
+      <%= render Buttons::PrimaryComponent.new(href: edit_expense_path(@expense)) do %>
+        Edit Expense
+      <% end %>
+    </div>
+
+    <%= link_to "← Back to Expenses", expenses_path, 
+        class: "text-primary-600 hover:text-primary-700 font-medium mb-6 inline-block" %>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Expense Information -->
+      <%= render CardComponent.new(title: "Expense Information") do %>
+        <dl class="space-y-4">
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Date</dt>
+            <dd class="mt-1 text-lg text-primary-900"><%= l(@expense.created_at, format: :long) %></dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Category</dt>
+            <dd class="mt-1">
+              <% category_colors = {
+                "rent" => "bg-red-100 text-red-800",
+                "ads" => "bg-blue-100 text-blue-800",
+                "packaging" => "bg-green-100 text-green-800",
+                "misc" => "bg-gray-100 text-gray-800"
+              } %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <%= category_colors[@expense.category] || 'bg-gray-100 text-gray-800' %>">
+                <%= @expense.category.humanize %>
+              </span>
+            </dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Amount</dt>
+            <dd class="mt-1 text-2xl font-bold text-primary-900">Rs. <%= number_with_delimiter(@expense.amount) %></dd>
+          </div>
+
+          <% if @expense.description.present? %>
+            <div>
+              <dt class="text-sm font-medium text-secondary-600">Description</dt>
+              <dd class="mt-1 text-primary-900 whitespace-pre-wrap"><%= @expense.description %></dd>
+            </div>
+          <% end %>
+        </dl>
+      <% end %>
+
+      <!-- Summary Card (placeholder for future analytics) -->
+      <%= render CardComponent.new(title: "Summary") do %>
+        <div class="space-y-2 text-sm text-secondary-600">
+          <p>This expense was recorded on <%= l(@expense.created_at.to_date, format: :long) %>.</p>
+          <% if @expense.category == "rent" %>
+            <p class="mt-4 p-3 bg-red-50 rounded-lg text-red-700">
+              💡 Rent expenses are typically recurring monthly costs.
+            </p>
+          <% elsif @expense.category == "ads" %>
+            <p class="mt-4 p-3 bg-blue-50 rounded-lg text-blue-700">
+              💡 Ad expenses help track marketing and promotional costs.
+            </p>
+          <% elsif @expense.category == "packaging" %>
+            <p class="mt-4 p-3 bg-green-50 rounded-lg text-green-700">
+              💡 Packaging expenses include materials for shipping and presentation.
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+

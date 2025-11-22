@@ -1,10 +1,16 @@
 <div class="min-h-screen bg-secondary-50">
   <div class="max-w-7xl mx-auto px-4 py-8">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-primary-900 mb-2">Dashboard</h1>
-      <p class="text-secondary-600">Welcome back, <%= current_user.full_name %>!</p>
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-primary-900 mb-2">Dashboard</h1>
+        <p class="text-secondary-600">Welcome back, <%= current_user.full_name %>!</p>
+      </div>
+      <%= render Buttons::PrimaryComponent.new(href: reports_path) do %>
+        📊 View Reports
+      <% end %>
     </div>
 
+    <!-- Overview Stats -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <%= render StatCardComponent.new(label: "Total Products", value: Product.count) %>
       <%= render StatCardComponent.new(label: "Total Sales", value: Sale.count) %>
@@ -12,22 +18,223 @@
       <%= render StatCardComponent.new(label: "Total Vendors", value: Vendor.count) %>
     </div>
 
-    <%= render CardComponent.new(title: "Quick Actions", class: "mb-8") do %>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <%= render Buttons::PrimaryComponent.new(href: new_product_path, size: :lg, full_width: true) do %>
-          ➕ Add Product
-        <% end %>
-        <%= render Buttons::PrimaryComponent.new(href: "#", size: :lg, full_width: true) do %>
-          💰 Add Sale
-        <% end %>
-        <%= render Buttons::PrimaryComponent.new(href: new_customer_path, size: :lg, full_width: true) do %>
-          👤 Add Customer
-        <% end %>
-      </div>
-    <% end %>
+    <!-- Revenue Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <%= render StatCardComponent.new(
+            label: "Today's Revenue",
+            value: number_to_currency(@today_revenue, unit: "Rs. ", separator: ".", delimiter: ","),
+            subtitle: "Profit: #{number_to_currency(@today_profit, unit: 'Rs. ', separator: '.', delimiter: ',')}"
+          ) %>
+      <%= render StatCardComponent.new(
+            label: "This Week's Revenue",
+            value: number_to_currency(@week_revenue, unit: "Rs. ", separator: ".", delimiter: ","),
+            subtitle: "Profit: #{number_to_currency(@week_profit, unit: 'Rs. ', separator: '.', delimiter: ',')}"
+          ) %>
+      <%= render StatCardComponent.new(
+            label: "This Month's Revenue",
+            value: number_to_currency(@month_revenue, unit: "Rs. ", separator: ".", delimiter: ","),
+            subtitle: "Profit: #{number_to_currency(@month_profit, unit: 'Rs. ', separator: '.', delimiter: ',')}"
+          ) %>
+      <%= render StatCardComponent.new(
+            label: "This Year's Revenue",
+            value: number_to_currency(@year_revenue, unit: "Rs. ", separator: ".", delimiter: ","),
+            subtitle: "Profit: #{number_to_currency(@year_profit, unit: 'Rs. ', separator: '.', delimiter: ',')}"
+          ) %>
+    </div>
 
-    <%= render CardComponent.new(title: "Recent Activity") do %>
-      <p class="text-secondary-600">Activity feed will be displayed here.</p>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Quick Actions -->
+      <%= render CardComponent.new(title: "Quick Actions") do %>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <%= render Buttons::PrimaryComponent.new(href: new_product_path, size: :lg, full_width: true) do %>
+            ➕ Add Product
+          <% end %>
+          <%= render Buttons::PrimaryComponent.new(href: new_sale_path, size: :lg, full_width: true) do %>
+            💰 Add Sale
+          <% end %>
+          <%= render Buttons::PrimaryComponent.new(href: new_customer_path, size: :lg, full_width: true) do %>
+            👤 Add Customer
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- Expense Summary -->
+      <%= render CardComponent.new(title: "Expense Summary") do %>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-secondary-600">Today's Expenses</span>
+            <span class="text-lg font-semibold text-primary-900">
+              <%= number_to_currency(@today_expenses, unit: "Rs. ", separator: ".", delimiter: ",") %>
+            </span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-secondary-600">This Month's Expenses</span>
+            <span class="text-lg font-semibold text-primary-900">
+              <%= number_to_currency(@month_expenses, unit: "Rs. ", separator: ".", delimiter: ",") %>
+            </span>
+          </div>
+          <div class="pt-4 border-t border-secondary-200">
+            <span class="text-secondary-600">Net Profit (Month)</span>
+            <p class="text-2xl font-bold <%= (@month_profit - @month_expenses) >= 0 ? 'text-green-600' : 'text-red-600' %>">
+              <%= number_to_currency(@month_profit - @month_expenses, unit: "Rs. ", separator: ".", delimiter: ",") %>
+            </p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Top Selling Products -->
+      <%= render CardComponent.new(title: "Top Selling Products") do %>
+        <% if @top_products.any? %>
+          <div class="space-y-3">
+            <% @top_products.each_with_index do |product, index| %>
+              <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                  <span class="text-lg font-bold text-primary-600">#<%= index + 1 %></span>
+                  <div>
+                    <p class="font-medium text-primary-900"><%= product.name %></p>
+                    <p class="text-sm text-secondary-600"><%= product.total_sold.to_i %> units sold</p>
+                  </div>
+                </div>
+                <%= link_to "View", product_path(product), 
+                    class: "text-primary-600 hover:text-primary-700 text-sm font-medium" %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-secondary-600">No sales data available.</p>
+        <% end %>
+      <% end %>
+
+      <!-- Top Customers -->
+      <%= render CardComponent.new(title: "Top Customers") do %>
+        <% if @top_customers.any? %>
+          <div class="space-y-3">
+            <% @top_customers.each_with_index do |customer, index| %>
+              <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                  <span class="text-lg font-bold text-primary-600">#<%= index + 1 %></span>
+                  <div>
+                    <p class="font-medium text-primary-900"><%= customer.full_name %></p>
+                    <p class="text-sm text-secondary-600">
+                      <%= number_to_currency(customer.total_spent, unit: "Rs. ", separator: ".", delimiter: ",") %> spent
+                    </p>
+                  </div>
+                </div>
+                <%= link_to "View", customer_path(customer), 
+                    class: "text-primary-600 hover:text-primary-700 text-sm font-medium" %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-secondary-600">No customer data available.</p>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Low Stock Alerts -->
+      <%= render CardComponent.new(title: "Low Stock Alerts") do %>
+        <% if @low_stock_products.any? %>
+          <div class="space-y-3">
+            <% @low_stock_products.each do |product| %>
+              <div class="flex items-center justify-between p-3 bg-accent-50 rounded-lg border border-accent-200">
+                <div>
+                  <p class="font-medium text-primary-900"><%= product.name %></p>
+                  <p class="text-sm text-accent-600 font-semibold">
+                    Only <%= product.stock_quantity %> left in stock
+                  </p>
+                </div>
+                <%= link_to "View", product_path(product), 
+                    class: "text-primary-600 hover:text-primary-700 text-sm font-medium" %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-secondary-600">All products are well stocked! ✅</p>
+        <% end %>
+      <% end %>
+
+      <!-- Expense Breakdown -->
+      <%= render CardComponent.new(title: "Expense Breakdown (All Time)") do %>
+        <% if @expense_breakdown.any? %>
+          <div class="space-y-3">
+            <% @expense_breakdown.each do |category, amount| %>
+              <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                <span class="font-medium text-primary-900 capitalize"><%= category %></span>
+                <span class="text-lg font-semibold text-primary-600">
+                  <%= number_to_currency(amount, unit: "Rs. ", separator: ".", delimiter: ",") %>
+                </span>
+              </div>
+            <% end %>
+            <div class="pt-3 border-t border-secondary-200">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-primary-900">Total</span>
+                <span class="text-xl font-bold text-primary-600">
+                  <%= number_to_currency(@expense_breakdown.values.sum, unit: "Rs. ", separator: ".", delimiter: ",") %>
+                </span>
+              </div>
+            </div>
+          </div>
+        <% else %>
+          <p class="text-secondary-600">No expenses recorded yet.</p>
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- Recent Sales Activity -->
+    <%= render CardComponent.new(title: "Recent Sales Activity") do %>
+      <% if @recent_sales.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-secondary-200">
+            <thead class="bg-secondary-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                  Product
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                  Customer
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                  Amount
+                </th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-secondary-200">
+              <% @recent_sales.each do |sale| %>
+                <tr class="hover:bg-secondary-50">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700">
+                    <%= l(sale.created_at.to_date, format: :short) %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-900">
+                    <%= sale.product.name %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700">
+                    <%= sale.customer.full_name %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-primary-900">
+                    <%= number_to_currency(sale.total, unit: "Rs. ", separator: ".", delimiter: ",") %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <%= render Buttons::OutlineComponent.new(size: :sm, href: sale_path(sale)) do %>
+                      View
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-secondary-600">No recent sales activity.</p>
+      <% end %>
     <% end %>
   </div>
 </div>
