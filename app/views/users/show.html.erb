@@ -108,20 +108,5 @@
         </dl>
       <% end %>
     </div>
-
-    <!-- Quick Actions -->
-    <div class="mt-6">
-      <%= render CardComponent.new(title: "Account Actions") do %>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <%= render Buttons::PrimaryComponent.new(href: edit_profile_path, full_width: true) do %>
-            ✏️ Edit Profile
-          <% end %>
-          <%= render Buttons::SecondaryComponent.new(href: edit_user_registration_path, full_width: true) do %>
-            🔒 Change Password
-          <% end %>
-        </div>
-      <% end %>
-    </div>
   </div>
 </div>
-

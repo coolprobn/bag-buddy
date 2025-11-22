@@ -3,15 +3,7 @@ Rails.application.routes.draw do
   root "welcome#index"
 
   # Authentication routes
-  devise_for :users, skip: [:registrations]
-
-  # Allow users to edit their own profile (but not create new accounts)
-  devise_scope :user do
-    get "users/edit",
-        to: "devise/registrations#edit",
-        as: :edit_user_registration
-    put "users", to: "devise/registrations#update", as: :user_registration
-  end
+  devise_for :users
 
   # Authenticated routes
   get "dashboard", to: "dashboard#index", as: :dashboard

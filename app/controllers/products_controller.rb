@@ -6,6 +6,7 @@ class ProductsController < AuthenticatedController
     @q = Product.ransack(params[:q])
     @q.sorts = ["created_at desc"] if @q.sorts.empty?
     @pagy, @products = pagy(@q.result, items: 20)
+    @vendors = Vendor.all.order(:name)
   end
 
   def show
