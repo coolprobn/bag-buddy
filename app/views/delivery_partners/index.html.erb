@@ -1,0 +1,81 @@
+<div class="min-h-screen bg-secondary-50">
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-primary-900 mb-2">Delivery Partners</h1>
+        <p class="text-secondary-600">Manage your delivery service providers</p>
+      </div>
+      <%= render Buttons::PrimaryComponent.new(href: new_delivery_partner_path) do %>
+        ➕ New Delivery Partner
+      <% end %>
+    </div>
+
+    <!-- Search Form -->
+    <%= render SearchFormComponent.new(
+          q: @q,
+          url: delivery_partners_path,
+          fields: [
+            { name: :name_cont, placeholder: "Search by name..." },
+            { name: :contact_number_cont, placeholder: "Search by contact..." }
+          ]
+        ) do |f| %>
+    <% end %>
+
+    <!-- Delivery Partners List -->
+    <% if @delivery_partners.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <% @delivery_partners.each do |delivery_partner| %>
+          <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <div class="mb-4">
+              <h3 class="text-xl font-semibold text-primary-900 mb-2"><%= delivery_partner.name %></h3>
+              <% if delivery_partner.contact_number.present? %>
+                <p class="text-secondary-600 mb-1">
+                  <span class="font-medium">📞</span> 
+                  <a href="tel:<%= delivery_partner.contact_number %>" class="text-primary-600 hover:text-primary-700 underline">
+                    <%= delivery_partner.contact_number %>
+                  </a>
+                </p>
+              <% end %>
+              <% if delivery_partner.default_cost.present? %>
+                <p class="text-secondary-600 mb-1">
+                  <span class="font-medium">💰</span> 
+                  <span class="font-semibold text-primary-900">Rs. <%= number_with_delimiter(delivery_partner.default_cost) %></span>
+                  <span class="text-sm text-secondary-500">default cost</span>
+                </p>
+              <% end %>
+              <% if delivery_partner.notes.present? %>
+                <p class="text-secondary-600 text-sm mt-2">
+                  <%= truncate(delivery_partner.notes, length: 80) %>
+                </p>
+              <% end %>
+            </div>
+            <div class="flex gap-2 pt-4 border-t border-secondary-200">
+              <%= render Buttons::OutlineComponent.new(size: :sm, href: delivery_partner_path(delivery_partner), class: "flex-1") do %>
+                View
+              <% end %>
+              <%= render Buttons::OutlineComponent.new(size: :sm, href: edit_delivery_partner_path(delivery_partner), class: "flex-1") do %>
+                Edit
+              <% end %>
+              <%= render Buttons::DangerComponent.new(size: :sm, href: delivery_partner_path(delivery_partner), method: :delete, data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, class: "flex-1") do %>
+                Delete
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex justify-center">
+        <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+      </div>
+    <% else %>
+      <div class="bg-white rounded-lg shadow p-12 text-center">
+        <p class="text-secondary-600 text-lg mb-4">No delivery partners found.</p>
+        <%= render Buttons::PrimaryComponent.new(href: new_delivery_partner_path) do %>
+          Create your first delivery partner
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+

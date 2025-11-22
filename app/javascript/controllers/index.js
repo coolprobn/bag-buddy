@@ -15,3 +15,6 @@ application.register("sale-calculator", SaleCalculatorController)
 
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
+
+import SettingFormController from "./setting_form_controller"
+application.register("setting-form", SettingFormController)

@@ -1,0 +1,64 @@
+<%= form_with model: delivery_partner, local: true, class: "space-y-6" do |f| %>
+  <%= render "shared/error_messages", resource: delivery_partner %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Name -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :name) %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :name,
+            type: :text,
+            placeholder: "Delivery partner name",
+            autofocus: true
+          ) %>
+    </div>
+
+    <!-- Contact Number -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :contact_number, text: "Contact Number") %>
+      <%= render Forms::PhoneFieldComponent.new(
+            form: f,
+            field: :contact_number,
+            placeholder: "+977 98XXXXXXXX"
+          ) %>
+    </div>
+
+    <!-- Default Cost -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :default_cost, text: "Default Cost (Rs.)") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :default_cost,
+            type: :number,
+            placeholder: "0.00",
+            min: 0,
+            step: 0.01
+          ) %>
+      <p class="text-xs text-secondary-600 mt-1">Default delivery cost for this partner</p>
+    </div>
+
+    <!-- Notes -->
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :notes) %>
+      <%= render Forms::TextAreaFieldComponent.new(
+            form: f,
+            field: :notes,
+            rows: 4,
+            placeholder: "Additional notes about this delivery partner"
+          ) %>
+    </div>
+  </div>
+
+  <div class="flex gap-4 pt-4">
+    <%= render Forms::SaveButtonComponent.new(
+          form: f,
+          label: delivery_partner.persisted? ? "Update Delivery Partner" : "Create Delivery Partner",
+          class: "flex-1"
+        ) %>
+    <%= render Buttons::SecondaryComponent.new(href: delivery_partners_path, class: "flex-1") do %>
+      Cancel
+    <% end %>
+  </div>
+<% end %>
+

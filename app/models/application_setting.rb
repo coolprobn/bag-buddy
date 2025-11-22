@@ -2,7 +2,6 @@ class ApplicationSetting < ApplicationRecord
   enum :field_type,
        number_field: "number_field",
        text_field: "text_field",
-       dropdown_field: "dropdown_field",
        boolean_field: "boolean_field"
 
   validates :key, presence: true, uniqueness: true
@@ -15,7 +14,7 @@ class ApplicationSetting < ApplicationRecord
       value.include?(".") ? value.to_f : value.to_i
     when "boolean_field"
       ActiveModel::Type::Boolean.new.cast(value)
-    when "dropdown_field", "text_field"
+    when "text_field"
       value
     else
       value
@@ -24,6 +23,14 @@ class ApplicationSetting < ApplicationRecord
 
   def self.get(key)
     find_by(key: key)&.parsed_value
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[created_at description field_type id key updated_at value]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
   end
 
   private
@@ -38,8 +45,8 @@ class ApplicationSetting < ApplicationRecord
       unless %w[true false 1 0].include?(value.to_s.downcase)
         errors.add(:value, "must be true or false")
       end
-    when "text_field", "dropdown_field"
-      # Text and dropdown are always valid as strings
+    when "text_field"
+      # Text fields are always valid as strings
     end
   end
 
