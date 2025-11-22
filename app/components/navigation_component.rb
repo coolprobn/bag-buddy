@@ -11,9 +11,34 @@ class NavigationComponent < ViewComponent::Base
   def nav_items
     [
       { name: "Dashboard", path: dashboard_path, icon: "📊" },
-      { name: "Vendors", path: vendors_path, icon: "🏪" },
       { name: "Products", path: products_path, icon: "👜" },
+      { name: "Sales", path: sales_path, icon: "💰" },
       { name: "Customers", path: customers_path, icon: "👥" }
+    ]
+  end
+
+  def dropdown_items
+    [
+      {
+        group: "Sales Operations",
+        items: [
+          { name: "Returns", path: sales_returns_path, icon: "↩️" },
+          { name: "Exchanges", path: exchanges_path, icon: "🔄" }
+        ]
+      },
+      {
+        group: "Management",
+        items: [
+          { name: "Vendors", path: vendors_path, icon: "🏪" },
+          { name: "Expenses", path: expenses_path, icon: "💸" }
+        ]
+      },
+      {
+        group: "Analytics",
+        items: [
+          { name: "Reports", path: reports_path, icon: "📊" }
+        ]
+      }
     ]
   end
 
