@@ -1,0 +1,56 @@
+<%= form_with model: expense, local: true, class: "space-y-6" do |f| %>
+  <%= render "shared/error_messages", resource: expense %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Category -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :category) %>
+      <%= f.select :category,
+            options_for_select([
+              ["Rent", "rent"],
+              ["Ads", "ads"],
+              ["Packaging", "packaging"],
+              ["Misc", "misc"]
+            ], expense.category),
+            { include_blank: "Select a category" },
+            class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors" %>
+    </div>
+
+    <!-- Amount -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :amount, text: "Amount (Rs.)") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :amount,
+            type: :number,
+            placeholder: "0.00",
+            min: 0,
+            step: 0.01,
+            autofocus: true
+          ) %>
+    </div>
+
+    <!-- Description -->
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :description) %>
+      <%= render Forms::TextAreaFieldComponent.new(
+            form: f,
+            field: :description,
+            rows: 4,
+            placeholder: "Describe this expense..."
+          ) %>
+    </div>
+  </div>
+
+  <div class="flex gap-4 pt-4">
+    <%= render Forms::SaveButtonComponent.new(
+          form: f,
+          label: expense.persisted? ? "Update Expense" : "Create Expense",
+          class: "flex-1"
+        ) %>
+    <%= render Buttons::SecondaryComponent.new(href: expenses_path, class: "flex-1") do %>
+      Cancel
+    <% end %>
+  </div>
+<% end %>
+

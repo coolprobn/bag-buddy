@@ -1,0 +1,65 @@
+<%= form_with model: exchange, local: true, class: "space-y-6" do |f| %>
+  <%= render "shared/error_messages", resource: exchange %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Original Sale Selection -->
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :original_sale_id, text: "Original Sale") %>
+      <%= f.select :original_sale_id,
+            options_from_collection_for_select(sales, :id, :sale_display, exchange.original_sale_id),
+            { include_blank: "Select a sale" },
+            class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors" %>
+      <% if exchange.original_sale.present? %>
+        <div class="mt-2 text-sm text-secondary-600">
+          <p>Product: <span class="font-medium"><%= exchange.original_sale.product.name %></span></p>
+          <p>Quantity: <span class="font-medium"><%= exchange.original_sale.quantity %></span></p>
+          <p>Selling Price: <span class="font-medium">Rs. <%= number_with_delimiter(exchange.original_sale.selling_price) %></span></p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Replacement Product Selection -->
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :replacement_product_id, text: "Replacement Product") %>
+      <%= f.select :replacement_product_id,
+            options_from_collection_for_select(products, :id, :name, exchange.replacement_product_id),
+            { include_blank: "Select a replacement product" },
+            class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors" %>
+      <% if exchange.replacement_product.present? %>
+        <div class="mt-2 text-sm text-secondary-600">
+          <p>Stock: <span class="font-medium <%= exchange.replacement_product.stock_quantity <= (ApplicationSetting.get("low_stock_threshold") || 1) ? 'text-accent-600' : '' %>"><%= exchange.replacement_product.stock_quantity %></span></p>
+          <p>Suggested Price: <span class="font-medium">Rs. <%= number_with_delimiter(exchange.replacement_product.auto_suggested_selling_price || exchange.replacement_product.current_cost_price * 1.5) %></span></p>
+          <% if exchange.original_sale.present? %>
+            <% price_diff = (exchange.replacement_product.auto_suggested_selling_price || exchange.replacement_product.current_cost_price * 1.5) - exchange.original_sale.selling_price %>
+            <p class="mt-2 <%= price_diff >= 0 ? 'text-green-600' : 'text-red-600' %>">
+              Price Difference: <span class="font-medium"><%= price_diff >= 0 ? '+' : '' %>Rs. <%= number_with_delimiter(price_diff) %></span>
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Notes -->
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :notes) %>
+      <%= render Forms::TextAreaFieldComponent.new(
+            form: f,
+            field: :notes,
+            rows: 4,
+            placeholder: "Additional notes about this exchange..."
+          ) %>
+    </div>
+  </div>
+
+  <div class="flex gap-4 pt-4">
+    <%= render Forms::SaveButtonComponent.new(
+          form: f,
+          label: exchange.persisted? ? "Update Exchange" : "Process Exchange",
+          class: "flex-1"
+        ) %>
+    <%= render Buttons::SecondaryComponent.new(href: exchanges_path, class: "flex-1") do %>
+      Cancel
+    <% end %>
+  </div>
+<% end %>
+

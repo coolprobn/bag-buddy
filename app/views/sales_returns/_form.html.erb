@@ -1,0 +1,73 @@
+<%= form_with model: sales_return, local: true, class: "space-y-6" do |f| %>
+  <%= render "shared/error_messages", resource: sales_return %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Sale Selection -->
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :sale_id, text: "Original Sale") %>
+      <%= f.select :sale_id,
+            options_from_collection_for_select(sales, :id, :sale_display, sales_return.sale_id),
+            { include_blank: "Select a sale" },
+            class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors" %>
+      <% if sales_return.sale.present? %>
+        <div class="mt-2 text-sm text-secondary-600">
+          <p>Product: <span class="font-medium"><%= sales_return.sale.product.name %></span></p>
+          <p>Quantity Sold: <span class="font-medium"><%= sales_return.sale.quantity %></span></p>
+          <p>Already Returned: <span class="font-medium"><%= sales_return.sale.sales_returns.where.not(id: sales_return.id).sum(:return_quantity) %></span></p>
+          <p>Available to Return: <span class="font-medium text-primary-600"><%= sales_return.sale.quantity - sales_return.sale.sales_returns.where.not(id: sales_return.id).sum(:return_quantity) %></span></p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Return Quantity -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :return_quantity) %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :return_quantity,
+            type: :number,
+            placeholder: "1",
+            min: 1,
+            step: 1,
+            autofocus: true
+          ) %>
+    </div>
+
+    <!-- Refund Amount -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :refund_amount, text: "Refund Amount (Rs.)") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :refund_amount,
+            type: :number,
+            placeholder: "0.00",
+            min: 0,
+            step: 0.01
+          ) %>
+      <p class="text-xs text-secondary-600 mt-1">Leave blank if no refund is required</p>
+    </div>
+
+    <!-- Reason -->
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :reason) %>
+      <%= render Forms::TextAreaFieldComponent.new(
+            form: f,
+            field: :reason,
+            rows: 4,
+            placeholder: "Reason for return..."
+          ) %>
+    </div>
+  </div>
+
+  <div class="flex gap-4 pt-4">
+    <%= render Forms::SaveButtonComponent.new(
+          form: f,
+          label: sales_return.persisted? ? "Update Return" : "Process Return",
+          class: "flex-1"
+        ) %>
+    <%= render Buttons::SecondaryComponent.new(href: sales_returns_path, class: "flex-1") do %>
+      Cancel
+    <% end %>
+  </div>
+<% end %>
+

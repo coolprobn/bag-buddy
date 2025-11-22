@@ -1,0 +1,110 @@
+<div class="min-h-screen bg-secondary-50">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-primary-900 mb-2">Return Details</h1>
+        <p class="text-secondary-600">Return #<%= @sales_return.obfuscated_id %></p>
+      </div>
+      <%= render Buttons::PrimaryComponent.new(href: edit_sales_return_path(@sales_return)) do %>
+        Edit Return
+      <% end %>
+    </div>
+
+    <%= link_to "← Back to Returns", sales_returns_path, 
+        class: "text-primary-600 hover:text-primary-700 font-medium mb-6 inline-block" %>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Return Information -->
+      <%= render CardComponent.new(title: "Return Information") do %>
+        <dl class="space-y-4">
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Date</dt>
+            <dd class="mt-1 text-lg text-primary-900"><%= l(@sales_return.created_at, format: :long) %></dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Original Sale</dt>
+            <dd class="mt-1 text-primary-900">
+              <%= link_to "Sale ##{@sales_return.sale.obfuscated_id}", sale_path(@sales_return.sale), 
+                  class: "text-primary-600 hover:text-primary-700 underline" %>
+            </dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Product</dt>
+            <dd class="mt-1 text-primary-900">
+              <%= link_to @sales_return.sale.product.name, product_path(@sales_return.sale.product), 
+                  class: "text-primary-600 hover:text-primary-700 underline" %>
+            </dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Customer</dt>
+            <dd class="mt-1 text-primary-900">
+              <%= link_to @sales_return.sale.customer.full_name, customer_path(@sales_return.sale.customer), 
+                  class: "text-primary-600 hover:text-primary-700 underline" %>
+            </dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Return Quantity</dt>
+            <dd class="mt-1 text-lg text-primary-900"><%= @sales_return.return_quantity %></dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Refund Amount</dt>
+            <dd class="mt-1 text-2xl font-bold text-primary-900">
+              <% if @sales_return.refund_amount.present? %>
+                Rs. <%= number_with_delimiter(@sales_return.refund_amount) %>
+              <% else %>
+                <span class="text-secondary-500">No refund</span>
+              <% end %>
+            </dd>
+          </div>
+
+          <% if @sales_return.reason.present? %>
+            <div>
+              <dt class="text-sm font-medium text-secondary-600">Reason</dt>
+              <dd class="mt-1 text-primary-900 whitespace-pre-wrap"><%= @sales_return.reason %></dd>
+            </div>
+          <% end %>
+        </dl>
+      <% end %>
+
+      <!-- Original Sale Details -->
+      <%= render CardComponent.new(title: "Original Sale Details") do %>
+        <dl class="space-y-4">
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Sale Date</dt>
+            <dd class="mt-1 text-primary-900"><%= l(@sales_return.sale.created_at.to_date, format: :long) %></dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Quantity Sold</dt>
+            <dd class="mt-1 text-primary-900"><%= @sales_return.sale.quantity %></dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Selling Price</dt>
+            <dd class="mt-1 text-primary-900">Rs. <%= number_with_delimiter(@sales_return.sale.selling_price) %> per unit</dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Total Sale Amount</dt>
+            <dd class="mt-1 text-primary-900">Rs. <%= number_with_delimiter(@sales_return.sale.total) %></dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Payment Method</dt>
+            <dd class="mt-1">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                <%= @sales_return.sale.payment_method.humanize %>
+              </span>
+            </dd>
+          </div>
+        </dl>
+      <% end %>
+    </div>
+  </div>
+</div>
+

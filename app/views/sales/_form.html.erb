@@ -1,0 +1,217 @@
+<%= form_with model: sale, local: true, class: "space-y-6", data: { controller: "sale-calculator" } do |f| %>
+  <%= render "shared/error_messages", resource: sale %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Product Selection -->
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :product_id, text: "Product") %>
+      <select name="sale[product_id]" id="sale_product_id"
+              class="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
+              data-sale-calculator-target="productSelect"
+              data-action="change->sale-calculator#updateProduct">
+        <option value="">Select a product</option>
+        <% products.each do |product| %>
+          <option value="<%= product.id %>"
+                  <%= "selected" if sale.product_id == product.id %>
+                  data-suggested-price="<%= product.auto_suggested_selling_price || (product.current_cost_price * 1.5) %>"
+                  data-stock="<%= product.stock_quantity %>"
+                  data-cost-price="<%= product.current_cost_price %>">
+            <%= product.name %> (<%= product.stock_quantity %> in stock)
+          </option>
+        <% end %>
+      </select>
+      <div class="mt-2 text-sm text-secondary-600" data-sale-calculator-target="productInfo">
+        <% if sale.product.present? %>
+          <p>Stock: <span class="font-medium <%= sale.product.stock_quantity <= (ApplicationSetting.get("low_stock_threshold") || 1) ? 'text-accent-600' : '' %>"><%= sale.product.stock_quantity %></span></p>
+          <p>Cost Price: Rs. <%= number_with_delimiter(sale.product.current_cost_price) %></p>
+          <p>Suggested Price: Rs. <%= number_with_delimiter(sale.product.auto_suggested_selling_price || sale.product.current_cost_price * 1.5) %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Customer Selection -->
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :customer_id, text: "Customer") %>
+      <%= f.select :customer_id,
+            options_from_collection_for_select(customers, :id, :full_name, sale.customer_id),
+            { include_blank: "Select a customer" },
+            class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors" %>
+    </div>
+
+    <!-- Selling Price -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :selling_price, text: "Selling Price (Rs.)") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :selling_price,
+            type: :number,
+            placeholder: "0.00",
+            min: 0,
+            step: 0.01,
+            data: {
+              sale_calculator_target: "sellingPrice",
+              action: "input->sale-calculator#calculate"
+            }
+          ) %>
+    </div>
+
+    <!-- Quantity -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :quantity) %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :quantity,
+            type: :number,
+            placeholder: "1",
+            min: 1,
+            step: 1,
+            data: {
+              sale_calculator_target: "quantity",
+              action: "input->sale-calculator#calculate"
+            }
+          ) %>
+      <% if sale.product.present? && sale.quantity.present? && sale.quantity > sale.product.stock_quantity %>
+        <p class="text-xs text-accent-600 mt-1">⚠️ Quantity exceeds available stock (<%= sale.product.stock_quantity %>)</p>
+      <% end %>
+    </div>
+
+    <!-- Subtotal (readonly, calculated) -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :subtotal, text: "Subtotal (Rs.)") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :subtotal,
+            type: :number,
+            placeholder: "Auto-calculated",
+            min: 0,
+            step: 0.01,
+            class: "bg-secondary-50",
+            readonly: true,
+            data: { sale_calculator_target: "subtotal" }
+          ) %>
+    </div>
+
+    <!-- Discount Amount -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :discount_amount, text: "Discount Amount (Rs.)") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :discount_amount,
+            type: :number,
+            placeholder: "0.00",
+            min: 0,
+            step: 0.01,
+            data: {
+              sale_calculator_target: "discountAmount",
+              action: "input->sale-calculator#calculate"
+            }
+          ) %>
+    </div>
+
+    <!-- Tax Amount -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :tax_amount, text: "Tax/VAT Amount (Rs.)") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :tax_amount,
+            type: :number,
+            placeholder: "0.00",
+            min: 0,
+            step: 0.01,
+            data: {
+              sale_calculator_target: "taxAmount",
+              action: "input->sale-calculator#calculate"
+            }
+          ) %>
+    </div>
+
+    <!-- Delivery Partner -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :delivery_partner_id, text: "Delivery Partner") %>
+      <select name="sale[delivery_partner_id]" id="sale_delivery_partner_id"
+              class="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
+              data-sale-calculator-target="deliveryPartner"
+              data-action="change->sale-calculator#updateDeliveryCost">
+        <option value="">No delivery</option>
+        <% delivery_partners.each do |dp| %>
+          <option value="<%= dp.id %>"
+                  <%= "selected" if sale.delivery_partner_id == dp.id %>
+                  data-default-cost="<%= dp.default_cost || 0 %>">
+            <%= dp.name %> <% if dp.default_cost.present? %>(Rs. <%= number_with_delimiter(dp.default_cost) %>)<% end %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+
+    <!-- Delivery Cost -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :delivery_cost, text: "Delivery Cost (Rs.)") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :delivery_cost,
+            type: :number,
+            placeholder: "0.00",
+            min: 0,
+            step: 0.01,
+            data: {
+              sale_calculator_target: "deliveryCost",
+              action: "input->sale-calculator#calculate"
+            }
+          ) %>
+    </div>
+
+    <!-- Total (readonly, calculated) -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :total, text: "Total (Rs.)") %>
+      <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :total,
+            type: :number,
+            placeholder: "Auto-calculated",
+            min: 0,
+            step: 0.01,
+            class: "bg-secondary-50 font-semibold",
+            readonly: true,
+            data: { sale_calculator_target: "total" }
+          ) %>
+    </div>
+
+    <!-- Payment Method -->
+    <div>
+      <%= render Forms::LabelComponent.new(form: f, field: :payment_method, text: "Payment Method") %>
+      <%= f.select :payment_method,
+            options_for_select([
+              ["Cash", "cash"],
+              ["Card", "card"],
+              ["Online", "online"],
+              ["Bank Transfer", "bank_transfer"],
+              ["Other", "other"]
+            ], sale.payment_method || "cash"),
+            {},
+            class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors" %>
+    </div>
+
+    <!-- Notes -->
+    <div class="md:col-span-2">
+      <%= render Forms::LabelComponent.new(form: f, field: :notes) %>
+      <%= render Forms::TextAreaFieldComponent.new(
+            form: f,
+            field: :notes,
+            rows: 3,
+            placeholder: "Additional notes about this sale"
+          ) %>
+    </div>
+  </div>
+
+  <div class="flex gap-4 pt-4">
+    <%= render Forms::SaveButtonComponent.new(
+          form: f,
+          label: sale.persisted? ? "Update Sale" : "Create Sale",
+          class: "flex-1"
+        ) %>
+    <%= render Buttons::SecondaryComponent.new(href: sales_path, class: "flex-1") do %>
+      Cancel
+    <% end %>
+  </div>
+<% end %>
+

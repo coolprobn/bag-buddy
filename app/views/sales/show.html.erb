@@ -1,0 +1,134 @@
+<div class="min-h-screen bg-secondary-50">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-primary-900 mb-2">Sale Details</h1>
+        <p class="text-secondary-600">Sale #<%= @sale.obfuscated_id %></p>
+      </div>
+      <%= render Buttons::PrimaryComponent.new(href: edit_sale_path(@sale)) do %>
+        Edit Sale
+      <% end %>
+    </div>
+
+    <%= link_to "← Back to Sales", sales_path, 
+        class: "text-primary-600 hover:text-primary-700 font-medium mb-6 inline-block" %>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Sale Information -->
+      <%= render CardComponent.new(title: "Sale Information") do %>
+        <dl class="space-y-4">
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Date</dt>
+            <dd class="mt-1 text-lg text-primary-900"><%= l(@sale.created_at, format: :long) %></dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Product</dt>
+            <dd class="mt-1 text-primary-900">
+              <%= link_to @sale.product.name, product_path(@sale.product), 
+                  class: "text-primary-600 hover:text-primary-700 underline" %>
+            </dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Customer</dt>
+            <dd class="mt-1 text-primary-900">
+              <%= link_to @sale.customer.full_name, customer_path(@sale.customer), 
+                  class: "text-primary-600 hover:text-primary-700 underline" %>
+            </dd>
+            <% if @sale.customer.phone.present? %>
+              <dd class="mt-1 text-sm text-secondary-600">
+                <a href="tel:<%= @sale.customer.phone %>" class="text-primary-600 hover:text-primary-700">
+                  📞 <%= @sale.customer.phone %>
+                </a>
+              </dd>
+            <% end %>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Quantity</dt>
+            <dd class="mt-1 text-lg text-primary-900"><%= @sale.quantity %></dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Payment Method</dt>
+            <dd class="mt-1">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                <%= @sale.payment_method.humanize %>
+              </span>
+            </dd>
+          </div>
+
+          <% if @sale.delivery_partner.present? %>
+            <div>
+              <dt class="text-sm font-medium text-secondary-600">Delivery Partner</dt>
+              <dd class="mt-1 text-primary-900"><%= @sale.delivery_partner.name %></dd>
+            </div>
+          <% end %>
+
+          <% if @sale.notes.present? %>
+            <div>
+              <dt class="text-sm font-medium text-secondary-600">Notes</dt>
+              <dd class="mt-1 text-primary-900 whitespace-pre-wrap"><%= @sale.notes %></dd>
+            </div>
+          <% end %>
+        </dl>
+      <% end %>
+
+      <!-- Financial Breakdown -->
+      <%= render CardComponent.new(title: "Financial Breakdown") do %>
+        <dl class="space-y-4">
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Selling Price (per unit)</dt>
+            <dd class="mt-1 text-lg text-primary-900">Rs. <%= number_with_delimiter(@sale.selling_price) %></dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-secondary-600">Subtotal</dt>
+            <dd class="mt-1 text-lg text-primary-900">Rs. <%= number_with_delimiter(@sale.subtotal) %></dd>
+          </div>
+
+          <% if @sale.discount_amount > 0 %>
+            <div>
+              <dt class="text-sm font-medium text-secondary-600">Discount</dt>
+              <dd class="mt-1 text-lg text-accent-600">
+                - Rs. <%= number_with_delimiter(@sale.discount_amount) %>
+                <span class="text-sm text-secondary-600">(<%= @sale.discount_percentage %>% off)</span>
+              </dd>
+            </div>
+          <% end %>
+
+          <% if @sale.tax_amount > 0 %>
+            <div>
+              <dt class="text-sm font-medium text-secondary-600">Tax/VAT</dt>
+              <dd class="mt-1 text-lg text-primary-900">Rs. <%= number_with_delimiter(@sale.tax_amount) %></dd>
+            </div>
+          <% end %>
+
+          <% if @sale.delivery_cost > 0 %>
+            <div>
+              <dt class="text-sm font-medium text-secondary-600">Delivery Cost</dt>
+              <dd class="mt-1 text-lg text-primary-900">Rs. <%= number_with_delimiter(@sale.delivery_cost) %></dd>
+            </div>
+          <% end %>
+
+          <div class="pt-4 border-t border-secondary-200">
+            <dt class="text-sm font-medium text-secondary-600">Total Amount</dt>
+            <dd class="mt-1 text-2xl font-bold text-primary-900">Rs. <%= number_with_delimiter(@sale.total) %></dd>
+          </div>
+
+          <div class="pt-4 border-t border-secondary-200">
+            <dt class="text-sm font-medium text-secondary-600">Profit</dt>
+            <dd class="mt-1 text-xl font-semibold <%= @sale.profit >= 0 ? 'text-green-600' : 'text-red-600' %>">
+              Rs. <%= number_with_delimiter(@sale.profit) %>
+            </dd>
+            <dd class="mt-1 text-sm text-secondary-600">
+              Cost: Rs. <%= number_with_delimiter(@sale.product.current_cost_price * @sale.quantity) %>
+            </dd>
+          </div>
+        </dl>
+      <% end %>
+    </div>
+  </div>
+</div>
+

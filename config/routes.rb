@@ -15,6 +15,8 @@ Rails.application.routes.draw do
 
   # Authenticated routes
   get "dashboard", to: "dashboard#index", as: :dashboard
+  get "reports", to: "reports#index", as: :reports
+  get "reports/export", to: "reports#export", as: :export_reports
 
   # Resources
   resources :vendors
@@ -26,6 +28,13 @@ Rails.application.routes.draw do
     end
   end
   resources :customers
+  resources :sales do
+    resources :sales_returns, only: [:create], path: "returns"
+    resources :exchanges, only: [:create]
+  end
+  resources :sales_returns
+  resources :exchanges
+  resources :expenses
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
