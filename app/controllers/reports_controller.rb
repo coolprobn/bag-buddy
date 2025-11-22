@@ -226,18 +226,18 @@ class ReportsController < AuthenticatedController
     # Analytics Summary Sheet
     workbook.add_worksheet(name: "Analytics Summary") do |sheet|
       sheet.add_row(["Metric", "Value"])
-      
+
       total_revenue = Sale.sum(:total) || 0
       total_profit = Sale.sum(:profit) || 0
       total_expenses = Expense.sum(:amount) || 0
       net_profit = total_profit - total_expenses
-      
+
       sheet.add_row(["Total Revenue (All Time)", total_revenue])
       sheet.add_row(["Total Profit (All Time)", total_profit])
       sheet.add_row(["Total Expenses (All Time)", total_expenses])
       sheet.add_row(["Net Profit (All Time)", net_profit])
       sheet.add_row([])
-      
+
       sheet.add_row(["Total Products", Product.count])
       sheet.add_row(["Active Products", Product.where(status: "active").count])
       sheet.add_row(["Total Vendors", Vendor.count])
@@ -246,7 +246,7 @@ class ReportsController < AuthenticatedController
       sheet.add_row(["Total Returns", SalesReturn.count])
       sheet.add_row(["Total Exchanges", Exchange.count])
       sheet.add_row([])
-      
+
       # Top 10 Products by Revenue
       sheet.add_row(["Top 10 Products by Revenue"])
       sheet.add_row(["Product", "Revenue", "Units Sold"])
@@ -258,9 +258,9 @@ class ReportsController < AuthenticatedController
              .each do |product|
         sheet.add_row([product.name, product.revenue, product.units_sold])
       end
-      
+
       sheet.add_row([])
-      
+
       # Top 10 Customers by Spending
       sheet.add_row(["Top 10 Customers by Spending"])
       sheet.add_row(["Customer", "Total Spent", "Purchase Count"])

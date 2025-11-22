@@ -31,4 +31,3 @@ class UsersController < AuthenticatedController
     )
   end
 end
-
