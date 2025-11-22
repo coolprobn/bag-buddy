@@ -11,8 +11,9 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <%# Enable PWA manifest for installable apps %>
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <meta name="theme-color" content="#b8956f">
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -23,24 +24,24 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="bg-secondary-50">
+  <body class="bg-secondary-50 pb-20 md:pb-4">
     <% if user_signed_in? %>
       <%= render NavigationComponent.new(current_user: current_user, current_path: request.path) %>
     <% end %>
 
     <% if notice %>
-      <div class="bg-primary-100 border-l-4 border-primary-500 text-primary-800 p-4 mt-4 rounded">
+      <div class="bg-primary-100 border-l-4 border-primary-500 text-primary-800 p-4 mt-4 mx-4 rounded sticky top-16 md:top-20 z-40">
         <p class="font-semibold"><%= notice %></p>
       </div>
     <% end %>
 
     <% if alert %>
-      <div class="bg-accent-100 border-l-4 border-accent-500 text-accent-800 p-4 mt-4 rounded">
+      <div class="bg-accent-100 border-l-4 border-accent-500 text-accent-800 p-4 mt-4 mx-4 rounded sticky top-16 md:top-20 z-40">
         <p class="font-semibold"><%= alert %></p>
       </div>
     <% end %>
 
-    <div class="m-4">
+    <div class="m-4 md:m-4">
       <%= yield %>
     </div>
   </body>

@@ -52,6 +52,10 @@
     <div class="bg-white rounded-lg shadow p-6 mb-8">
       <h2 class="text-xl font-semibold text-primary-900 mb-4">Export Reports</h2>
       <div class="flex flex-wrap gap-4">
+        <%= link_to bulk_export_reports_path(format: :xlsx),
+            class: "inline-flex items-center px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors text-base" do %>
+          📦 Full Bulk Export (All Data)
+        <% end %>
         <%= link_to export_reports_path(start_date: @start_date, end_date: @end_date, report_type: "sales", format: :xlsx),
             class: "inline-flex items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors" do %>
           📊 Export Sales Report (Excel)

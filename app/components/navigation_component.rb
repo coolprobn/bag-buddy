@@ -17,6 +17,16 @@ class NavigationComponent < ViewComponent::Base
     ]
   end
 
+  def main_nav_items
+    [
+      { name: "Home", path: dashboard_path, icon: "📊" },
+      { name: "Products", path: products_path, icon: "👜" },
+      { name: "Sales", path: sales_path, icon: "💰" },
+      { name: "Customers", path: customers_path, icon: "👥" },
+      { name: "More", path: reports_path, icon: "☰" }
+    ]
+  end
+
   def dropdown_items
     [
       {
@@ -43,6 +53,7 @@ class NavigationComponent < ViewComponent::Base
       {
         group: "System",
         items: [
+          { name: "Profile", path: profile_path, icon: "👤" },
           { name: "Settings", path: application_settings_path, icon: "⚙️" }
         ]
       }

@@ -8,6 +8,9 @@ export default class extends Controller {
     "quantity",
     "subtotal",
     "discountAmount",
+    "discountPercentage",
+    "discountPercentageDisplay",
+    "discountPreset",
     "taxAmount",
     "deliveryPartner",
     "deliveryCost",
@@ -67,6 +70,70 @@ export default class extends Controller {
     this.calculate()
   }
 
+  applyDiscountPreset(event) {
+    const percentage = parseFloat(event.target.dataset.percentage)
+    const subtotal = parseFloat(this.subtotalTarget.value) || 0
+    
+    if (subtotal > 0) {
+      const discountAmount = (subtotal * percentage / 100).toFixed(2)
+      this.discountAmountTarget.value = discountAmount
+      if (this.hasDiscountPercentageTarget) {
+        this.discountPercentageTarget.value = percentage.toFixed(0)
+      }
+      if (this.hasDiscountPercentageDisplayTarget) {
+        this.discountPercentageDisplayTarget.value = percentage.toFixed(0) + '%'
+      }
+      
+      // Update preset button states
+      this.discountPresetTargets.forEach(btn => {
+        if (parseFloat(btn.dataset.percentage) === percentage) {
+          btn.classList.add('bg-primary-600', 'text-white', 'border-primary-600')
+          btn.classList.remove('bg-white', 'text-primary-700', 'border-secondary-300')
+        } else {
+          btn.classList.remove('bg-primary-600', 'text-white', 'border-primary-600')
+          btn.classList.add('bg-white', 'text-primary-700', 'border-secondary-300')
+        }
+      })
+      
+      this.calculate()
+    }
+  }
+
+  applyCustomDiscount() {
+    const subtotal = parseFloat(this.subtotalTarget.value) || 0
+    const discountAmount = parseFloat(this.discountAmountTarget.value) || 0
+    
+    if (subtotal > 0 && discountAmount > 0) {
+      const percentage = ((discountAmount / subtotal) * 100).toFixed(0)
+      if (this.hasDiscountPercentageTarget) {
+        this.discountPercentageTarget.value = percentage
+      }
+      if (this.hasDiscountPercentageDisplayTarget) {
+        this.discountPercentageDisplayTarget.value = percentage + '%'
+      }
+      
+      // Reset preset button states
+      this.discountPresetTargets.forEach(btn => {
+        btn.classList.remove('bg-primary-600', 'text-white', 'border-primary-600')
+        btn.classList.add('bg-white', 'text-primary-700', 'border-secondary-300')
+      })
+    } else {
+      if (this.hasDiscountPercentageTarget) {
+        this.discountPercentageTarget.value = ''
+      }
+      if (this.hasDiscountPercentageDisplayTarget) {
+        this.discountPercentageDisplayTarget.value = ''
+      }
+      
+      // Reset preset button states
+      this.discountPresetTargets.forEach(btn => {
+        btn.classList.remove('bg-primary-600', 'text-white', 'border-primary-600')
+        btn.classList.add('bg-white', 'text-primary-700', 'border-secondary-300')
+      })
+    }
+    this.calculate()
+  }
+
   calculate() {
     const sellingPrice = parseFloat(this.sellingPriceTarget.value) || 0
     const quantity = parseFloat(this.quantityTarget.value) || 0
@@ -77,6 +144,24 @@ export default class extends Controller {
     // Calculate subtotal
     const subtotal = (sellingPrice * quantity).toFixed(2)
     this.subtotalTarget.value = subtotal
+
+    // Update discount percentage if discount amount changed manually
+    if (subtotal > 0 && discountAmount > 0) {
+      const percentage = ((discountAmount / parseFloat(subtotal)) * 100).toFixed(0)
+      if (this.hasDiscountPercentageTarget) {
+        this.discountPercentageTarget.value = percentage
+      }
+      if (this.hasDiscountPercentageDisplayTarget) {
+        this.discountPercentageDisplayTarget.value = percentage + '%'
+      }
+    } else {
+      if (this.hasDiscountPercentageTarget) {
+        this.discountPercentageTarget.value = ''
+      }
+      if (this.hasDiscountPercentageDisplayTarget) {
+        this.discountPercentageDisplayTarget.value = ''
+      }
+    }
 
     // Calculate total: subtotal - discount + tax + delivery
     const total = (parseFloat(subtotal) - discountAmount + taxAmount + deliveryCost).toFixed(2)
