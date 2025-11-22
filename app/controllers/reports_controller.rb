@@ -1,8 +1,15 @@
 class ReportsController < AuthenticatedController
   def index
+    # Use dates from params (frontend handles preset calculations)
     # Default to current month if no dates provided
-    @start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.current.beginning_of_month
-    @end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Date.current.end_of_month
+    begin
+      @start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.current.beginning_of_month
+      @end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Date.current.end_of_month
+    rescue ArgumentError, TypeError
+      # Fallback to current month if date parsing fails
+      @start_date = Date.current.beginning_of_month
+      @end_date = Date.current.end_of_month
+    end
 
     # Sales report data
     @sales = Sale.where(created_at: @start_date.beginning_of_day..@end_date.end_of_day)

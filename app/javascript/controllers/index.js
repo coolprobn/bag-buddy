@@ -4,8 +4,17 @@
 
 import { application } from "./application"
 
+import DatePresetsController from "./date_presets_controller"
+application.register("date-presets", DatePresetsController)
+
+import DropdownController from "./dropdown_controller"
+application.register("dropdown", DropdownController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
+
+import MobileMenuController from "./mobile_menu_controller"
+application.register("mobile-menu", MobileMenuController)
 
 import PriceCalculatorController from "./price_calculator_controller"
 application.register("price-calculator", PriceCalculatorController)
@@ -13,11 +22,5 @@ application.register("price-calculator", PriceCalculatorController)
 import SaleCalculatorController from "./sale_calculator_controller"
 application.register("sale-calculator", SaleCalculatorController)
 
-import DropdownController from "./dropdown_controller"
-application.register("dropdown", DropdownController)
-
 import SettingFormController from "./setting_form_controller"
 application.register("setting-form", SettingFormController)
-
-import MobileMenuController from "./mobile_menu_controller"
-application.register("mobile-menu", MobileMenuController)

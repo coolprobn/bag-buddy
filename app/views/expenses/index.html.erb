@@ -6,7 +6,7 @@
         <p class="text-secondary-600">Track your business expenses</p>
       </div>
       <%= render Buttons::PrimaryComponent.new(href: new_expense_path) do %>
-        ➕ New Expense
+        <span class="text-white">+</span> New Expense
       <% end %>
     </div>
 
@@ -14,33 +14,13 @@
     <%= render SearchFormComponent.new(
           q: @q,
           url: expenses_path,
-          form_class: "space-y-4"
-        ) do |f| %>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <%= f.select :category_eq, 
-                options_for_select([
-                  ["All Categories", ""],
-                  ["Rent", "rent"],
-                  ["Ads", "ads"],
-                  ["Packaging", "packaging"],
-                  ["Misc", "misc"]
-                ], params.dig(:q, :category_eq)),
-                {},
-                class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" %>
-        </div>
-        <div>
-          <%= f.search_field :description_cont, 
-                placeholder: "Search by description...",
-                class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" %>
-        </div>
-        <div>
-          <%= f.search_field :amount_gteq, 
-                placeholder: "Min amount...",
-                class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" %>
-        </div>
-      </div>
-    <% end %>
+          form_class: "space-y-4",
+          fields: [
+            { name: :category_eq, placeholder: "Search by category...", options: [["All Categories", ""], ["Rent", "rent"], ["Ads", "ads"], ["Packaging", "packaging"], ["Misc", "misc"]] },
+            { name: :description_cont, placeholder: "Search by description..." },
+            { name: :amount_gteq, placeholder: "Search by amount..." }
+          ]
+        ) %>
 
     <!-- Expenses List -->
     <% if @expenses.any? %>

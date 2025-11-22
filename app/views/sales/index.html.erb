@@ -6,7 +6,7 @@
         <p class="text-secondary-600">Manage your sales transactions</p>
       </div>
       <%= render Buttons::PrimaryComponent.new(href: new_sale_path) do %>
-        ➕ New Sale
+        <span class="text-white">+</span> New Sale
       <% end %>
     </div>
 
@@ -14,33 +14,13 @@
     <%= render SearchFormComponent.new(
           q: @q,
           url: sales_path,
-          form_class: "space-y-4"
-        ) do |f| %>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <%= f.search_field :product_name_cont, placeholder: "Search by product...",
-                class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" %>
-        </div>
-        <div>
-          <%= f.search_field :customer_first_name_or_customer_last_name_cont, 
-                placeholder: "Search by customer...",
-                class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" %>
-        </div>
-        <div>
-          <%= f.select :payment_method_eq, 
-                options_for_select([
-                  ["All Payment Methods", ""],
-                  ["Cash", "cash"],
-                  ["Card", "card"],
-                  ["Online", "online"],
-                  ["Bank Transfer", "bank_transfer"],
-                  ["Other", "other"]
-                ], params.dig(:q, :payment_method_eq)),
-                {},
-                class: "w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" %>
-        </div>
-      </div>
-    <% end %>
+          form_class: "space-y-4",
+          fields: [
+            { name: :product_name_cont, placeholder: "Search by product..." },
+            { name: :customer_first_name_or_customer_last_name_cont, placeholder: "Search by customer..." },
+            { name: :payment_method_eq, placeholder: "Search by payment method...", options: [["All Payment Methods", ""], ["Cash", "cash"], ["Card", "card"], ["Online", "online"], ["Bank Transfer", "bank_transfer"], ["Other", "other"]] }
+          ]
+        ) %>
 
     <!-- Sales List -->
     <% if @sales.any? %>

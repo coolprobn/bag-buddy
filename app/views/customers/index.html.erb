@@ -6,7 +6,7 @@
         <p class="text-secondary-600">Manage your customer database</p>
       </div>
       <%= render Buttons::PrimaryComponent.new(href: new_customer_path) do %>
-        ➕ New Customer
+        <span class="text-white">+</span> New Customer
       <% end %>
     </div>
 
@@ -66,7 +66,7 @@
                     <a href="https://tiktok.com/@<%= customer.tiktok_profile_url %>" 
                        target="_blank" 
                        rel="noopener noreferrer"
-                       class="bg-black text-white px-3 py-1 rounded text-xs font-medium hover:bg-gray-800 transition-colors">
+                       class="bg-gray-500 text-white px-3 py-1 rounded text-xs font-medium hover:bg-gray-600 transition-colors">
                       🎵 TikTok
                     </a>
                   <% end %>
